@@ -14,11 +14,50 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
-    NSString *str = [[NSBundle mainBundle] pathForResource:@"hi" ofType:@"m4a"];
-    self.musicData = [NSData dataWithContentsOfFile:str];
-    NSLog(@"DATA: %i", self.musicData.length);
+    [self setupAudio];
+
+//    NSLog(@"DATA: %i", self.musicData.length);
     
 }
+
+- (void) setupAudio {
+    NSError * error;
+    [[AVAudioSession sharedInstance] setActive:YES error:&error];
+    if (error != nil) {
+        NSAssert(error == nil, @"");
+    }
+    
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
+    if (error != nil) {
+        NSAssert(error == nil, @"");
+    }
+    
+    NSURL *soundURL = [[NSBundle mainBundle] URLForResource:@"hi" withExtension:@"m4a"];
+    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&error];
+    if (error != nil) {
+        NSAssert(error == nil, @"");
+    }
+    
+    [self.audioPlayer setVolume:0.8];
+    [self.audioPlayer prepareToPlay];
+    
+}
+- (IBAction)playButtonPressed:(id)sender {
+    NSLog(@"play button clicked");
+    BOOL played = [self.audioPlayer play];
+    if (!played) {
+        NSLog(@"Error");
+    }
+    NSString * musicPath = [[NSBundle mainBundle] pathForResource:@"hi" ofType:@"m4a"];
+    self.musicData = [NSData dataWithContentsOfFile:musicPath];
+    _dataToSend = _musicData;
+    [self sendData];
+}
+- (IBAction)stopButtonPressed:(id)sender {
+    [self.audioPlayer stop];
+}
+
+
 - (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral {
     if (peripheral.state != CBPeripheralManagerStatePoweredOn) {
         return;
@@ -45,7 +84,7 @@
     
     _sendDataIndex = 0;
 
-    [self sendData];
+//    [self sendData];
     
 }
 

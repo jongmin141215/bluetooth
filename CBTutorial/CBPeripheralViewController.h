@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreBluetooth/CoreBluetooth.h>
-
+@import AVFoundation;
 #import "SERVICES.h"
 
 @interface CBPeripheralViewController : UIViewController < CBPeripheralManagerDelegate, UITextViewDelegate>
@@ -19,5 +19,6 @@
 @property (strong, nonatomic) NSData *dataToSend;
 @property (nonatomic, readwrite) NSInteger sendDataIndex;
 @property (strong, nonatomic) NSData *musicData;
+@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 
 @end
